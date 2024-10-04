@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profiles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .profile {
+            background: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .profile h2 {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Profiles</h1>
+    <div id="profiles"></div>
+    <button onclick="window.location.href='editProfile.html'">Edit Profile</button>
+
+    <script>
+        async function fetchProfiles() {
+            const response = await fetch('/getProfiles');
+            const profiles = await response.json();
+            const profilesDiv = document.getElementById('profiles');
+
+            profiles.forEach(profile => {
+                const profileDiv = document.createElement('div');
+                profileDiv.className = 'profile';
+                profileDiv.innerHTML = `<h2>${profile.name}</h2><p>${profile.email}</p>`;
+                profilesDiv.appendChild(profileDiv);
+            });
+        }
+
+        fetchProfiles();
+    </script>
+</body>
+</html>

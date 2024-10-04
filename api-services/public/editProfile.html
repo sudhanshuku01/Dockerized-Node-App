@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        label, input, select {
+            display: block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Profile</h1>
+    <form id="profileForm">
+        <label for="profileSelect">Select Profile:</label>
+        <select id="profileSelect"></select>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <button type="submit">Update Profile</button>
+    </form>
+
+    <script>
+        async function fetchProfiles() {
+            const response = await fetch('/getProfiles');
+            const profiles = await response.json();
+            const profileSelect = document.getElementById('profileSelect');
+
+            profiles.forEach(profile => {
+                const option = document.createElement('option');
+                option.value = profile._id; // Use the MongoDB document ID
+                option.textContent = profile.name;
+                profileSelect.appendChild(option);
+            });
+        }
+
+        document.getElementById('profileSelect').addEventListener('change', async (e) => {
+            const profileId = e.target.value;
+
+            const response = await fetch(`/getProfile/${profileId}`);
+            const profile = await response.json();
+
+            if (profile) {
+                document.getElementById('name').value = profile.name;
+                document.getElementById('email').value = profile.email;
+            }
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const profileId = document.getElementById('profileSelect').value;
+
+            const response = await fetch(`/updateProfile/${profileId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email }),
+            });
+
+            if (response.ok) {
+                alert('Profile updated successfully!');
+            } else {
+                alert('Error updating profile.');
+            }
+        });
+
+        fetchProfiles();
+    </script>
+</body>
+</html>
